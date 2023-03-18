@@ -1,6 +1,8 @@
 # ChatGPT Code Review
 
-ChatGPT Code Review is an app designed to help software developers improve
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/)
+
+[ChatGPT Code Review](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/) is an app designed to help software developers improve
 their code quality by leveraging the power of OpenAI's large language models.
 The app analyzes the code in a given GitHub repository and provides
 recommendations to enhance the code. It is a valuable tool for developers,
