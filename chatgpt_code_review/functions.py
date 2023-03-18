@@ -60,7 +60,7 @@ def get_recommendations(repo_url, max_tokens, extensions):
         for ext in extensions:
             code_files.extend(get_all_files_in_directory(local_path, ext))
         # Analyze each code file
-        for code_file in code_files:
+        for code_file in sorted(code_files):
             response = analyze_code_file(code_file, max_tokens)
             yield response
 
