@@ -9,7 +9,6 @@ from git import Repo
 
 @st.cache_data(show_spinner=False)
 def clone_github_repository(repo_url, local_path):
-    # Clone the GitHub repository
     try:
         repo = Repo.clone_from(repo_url, local_path)
         return repo
@@ -40,7 +39,7 @@ def analyze_code_file(code_file, max_tokens):
     except Exception as e:
         logging.error("Error analyzing code file %s: %s", code_file, e)
         analysis = "Error analyzing code file: " + str(e)
-        analysis += "\n\n(You may need to increase the maximum tokens per OpenAI API response)"
+        analysis += "\n\n(You may need to increase the maximum tokens)"
     return {
         "code_file": code_file,
         "code_snippet": code_content,
@@ -129,6 +128,7 @@ def extension_to_language(file_extension):
 
 def display_code(code, extension):
     language = extension_to_language(extension)
+    logging.info("Displaying code with language %s", language)
     markdown_code = f"```{language}\n{code}\n```"
     st.markdown(markdown_code, unsafe_allow_html=True)
 

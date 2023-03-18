@@ -6,8 +6,7 @@ import streamlit as st
 from about import about_section
 from functions import display_code, escape_markdown, get_recommendations
 
-# Set up the OpenAI API
-# Load the API key from .env
+
 env_file_path = ".env"
 
 # Load all environment variables from the .env file
@@ -61,19 +60,20 @@ with c2:
     # About section expanded by default
     with st.expander("About ChatGPT Code Review"):
         st.markdown(about_section)
+        st.write("")
 
     with st.form("repo_url_form"):
         # Get the GitHub repository URL
         default_repo_url = "https://github.com/domvwt/chatgpt-code-review"
         repo_url = st.text_input("GitHub Repository URL:", default_repo_url)
 
-        # Show the API key
+        # Get the OpenAI API key
         api_key = os.getenv("OPENAI_API_KEY", "")
         openai.api_key = st.text_input("OpenAI API Key:", api_key, placeholder="Paste your API key here")
 
         # Set the maximum as integer input
         max_tokens = st.number_input(
-            "Maximum tokens per OpenAI API response", min_value=1, max_value=4096, value=200
+            "Maximum tokens per OpenAI API query and response", min_value=1, max_value=4096, value=2000
         )
 
         # Select file extensions to analyze
