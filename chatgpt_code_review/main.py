@@ -11,11 +11,12 @@ from functions import display_code, escape_markdown, get_recommendations
 env_file_path = ".env"
 
 # Load all environment variables from the .env file
-with open(env_file_path) as f:
-    for line in f:
-        if line.strip():
-            key, value = line.strip().split("=")
-            os.environ[key] = value
+if os.path.exists(env_file_path):
+    with open(env_file_path) as f:
+        for line in f:
+            if line.strip():
+                key, value = line.strip().split("=")
+                os.environ[key] = value
 
 # Configure logging
 log_file = "app.log"
@@ -67,7 +68,7 @@ with c2:
         repo_url = st.text_input("GitHub Repository URL:", default_repo_url)
 
         # Show the API key
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = os.getenv("OPENAI_API_KEY", "your-api-key")
         openai.api_key = st.text_input("OpenAI API Key:", api_key)
 
         # Set the maximum as integer input
