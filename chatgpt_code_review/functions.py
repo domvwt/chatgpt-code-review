@@ -7,7 +7,7 @@ import streamlit as st
 from git import Repo
 
 
-@st.cache_data
+@st.cache_data(show_spinner=False)
 def clone_github_repository(repo_url, local_path):
     # Clone the GitHub repository
     try:
@@ -35,7 +35,12 @@ def analyze_code_file(code_file, max_tokens):
     # Ignore empty files
     if not code_content:
         return None
-    analysis = get_analysis(code_content, max_tokens=max_tokens)
+    try:
+        analysis = get_analysis(code_content, max_tokens=max_tokens)
+    except Exception as e:
+        logging.error("Error analyzing code file %s: %s", code_file, e)
+        analysis = "Error analyzing code file: " + str(e)
+        analysis += "\n\n(You may need to increase the maximum tokens per OpenAI API response)"
     return {
         "code_file": code_file,
         "code_snippet": code_content,
