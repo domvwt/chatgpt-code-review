@@ -77,10 +77,11 @@ with c2:
         )
 
         # Select file extensions to analyze
+        options = [".py", ".js", ".java", ".scala", ".cpp", ".c", ".cs", ".go", ".php", ".rb"]
         extensions = st.multiselect(
             "File extensions to analyze",
-            options=[".py", ".js", ".java", ".scala", ".cpp", ".c", ".cs", ".go", ".php", ".rb"],
-            default=[".py"],
+            options=options,
+            default=options,
         )
         additional_extensions = st.text_input("Additional file extensions to analyze (comma-separated):")
         if additional_extensions:
