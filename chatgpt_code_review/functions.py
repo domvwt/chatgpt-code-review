@@ -27,7 +27,7 @@ def get_all_files_in_directory(path, extension):
 
 
 @st.cache_data(show_spinner=False)
-def analyze_code_file(code_file):
+def analyze_code_file(code_file, max_tokens):
     with open(code_file, "r") as f:
         code_snippet = f.read()
     # Log length of code snippet
@@ -35,7 +35,7 @@ def analyze_code_file(code_file):
     # Ignore empty files
     if not code_snippet:
         return None
-    analysis = get_analysis(code_snippet)
+    analysis = get_analysis(code_snippet, max_tokens=max_tokens)
     return {
         "code_file": code_file,
         "code_snippet": code_snippet,
@@ -44,12 +44,12 @@ def analyze_code_file(code_file):
 
 
 # Change spinner text to "Analyzing repository..."
-@st.cache_data(show_spinner=False)
-def get_recommendations(repo_url):
+# @st.cache_data(show_spinner=False)
+def get_recommendations(repo_url, max_tokens):
     # Analyze the repository
-    recommendations = []
     if repo_url:
         local_path = repo_url.split("/")[-1]
+        local_path = os.path.join("/tmp", local_path)
         # Clone the repository if it doesn't exist
         if not os.path.exists(local_path):
             clone_github_repository(repo_url, local_path)
@@ -58,42 +58,50 @@ def get_recommendations(repo_url):
         extensions = [".py", ".js"]  # Add more extensions as needed
         for ext in extensions:
             code_files.extend(get_all_files_in_directory(local_path, ext))
-
         # Analyze each code file
         for code_file in code_files:
-            response = analyze_code_file(code_file)
-            if response:
-                recommendations.append(response)
-
-    return recommendations
+            response = analyze_code_file(code_file, max_tokens)
+            yield response
 
 
 @st.cache_data(show_spinner=False)
-def get_analysis(code):
-    prompt = dedent(
-        f"""
-    Analyze the code below and provide feedback on syntax and logical
-    errors, code refactoring and quality, performance optimization, security
-    vulnerabilities, and best practices. Please provide specific examples of
-    improvements for each area.
+def get_analysis(code, max_tokens=200):
+    prompt = dedent(f"""\
+        Analyze the code below and provide feedback on syntax and logical errors, code
+        refactoring and quality, performance optimization, security vulnerabilities,
+        and best practices. Please provide specific examples of improvements for each
+        area. Be concise and focus on the most important issues.
 
-    Code:
-    ```{code}```
-    """
+        Use the following response format, replacing 'RESPONSE' with feedback:
+        **Syntax and logical errors**: RESPONSE
+        **Code refactoring and quality**: RESPONSE
+        **Performance optimization**: RESPONSE
+        **Security vulnerabilities**: RESPONSE
+        **Best practices**: RESPONSE
+
+        Code:
+        ```{code}```
+
+        Your review:"""
     )
 
     logging.info("Sending request to OpenAI API for code analysis")
-    response = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
-        max_tokens=150,
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": code},
+        ],
+        max_tokens=max_tokens,
         n=1,
-        stop=None,
-        temperature=0,
+        temperature=0.5,
     )
     logging.info("Received response from OpenAI API")
 
-    return response.choices[0].text.strip()
+    # Get the assistant's response from the API response
+    assistant_response = response.choices[0].message['content']
+
+    return assistant_response.strip()
 
 
 def display_code(code, language):
