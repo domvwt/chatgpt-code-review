@@ -89,6 +89,9 @@ with c2:
         button = st.form_submit_button("Analyze Repository")
 
     if button:
+        if not openai.api_key:
+            st.error("Please enter your OpenAI API key.")
+            st.stop()
         with st.spinner("Analyzing repository..."):
             if repo_url:
                 recommendations = get_recommendations(repo_url, max_tokens, extensions)
