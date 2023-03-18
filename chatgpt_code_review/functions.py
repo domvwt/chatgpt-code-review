@@ -29,23 +29,23 @@ def get_all_files_in_directory(path, extension):
 @st.cache_data(show_spinner=False)
 def analyze_code_file(code_file, max_tokens):
     with open(code_file, "r") as f:
-        code_snippet = f.read()
+        code_content = f.read()
     # Log length of code snippet
-    logging.info("Read code file %s with length %d", code_file, len(code_snippet))
+    logging.info("Read code file %s with length %d", code_file, len(code_content))
     # Ignore empty files
-    if not code_snippet:
+    if not code_content:
         return None
-    analysis = get_analysis(code_snippet, max_tokens=max_tokens)
+    analysis = get_analysis(code_content, max_tokens=max_tokens)
     return {
         "code_file": code_file,
-        "code_snippet": code_snippet,
+        "code_snippet": code_content,
         "recommendation": analysis,
     }
 
 
 # Change spinner text to "Analyzing repository..."
 # @st.cache_data(show_spinner=False)
-def get_recommendations(repo_url, max_tokens):
+def get_recommendations(repo_url, max_tokens, extensions):
     # Analyze the repository
     if repo_url:
         local_path = repo_url.split("/")[-1]
@@ -55,7 +55,6 @@ def get_recommendations(repo_url, max_tokens):
             clone_github_repository(repo_url, local_path)
         # Get code files in the repository
         code_files = []
-        extensions = [".py", ".js"]  # Add more extensions as needed
         for ext in extensions:
             code_files.extend(get_all_files_in_directory(local_path, ext))
         # Analyze each code file

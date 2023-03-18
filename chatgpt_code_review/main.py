@@ -68,20 +68,30 @@ with c2:
         repo_url = st.text_input("GitHub Repository URL:", default_repo_url)
 
         # Show the API key
-        api_key = os.getenv("OPENAI_API_KEY", "your-api-key")
-        openai.api_key = st.text_input("OpenAI API Key:", api_key)
+        api_key = os.getenv("OPENAI_API_KEY", "")
+        openai.api_key = st.text_input("OpenAI API Key:", api_key, placeholder="Paste your API key here")
 
         # Set the maximum as integer input
         max_tokens = st.number_input(
             "Maximum tokens per OpenAI API response", min_value=1, max_value=4096, value=200
         )
 
+        # Select file extensions to analyze
+        extensions = st.multiselect(
+            "File extensions to analyze",
+            options=[".py", ".js", ".java", ".scala", ".cpp", ".c", ".cs", ".go", ".php", ".rb"],
+            default=[".py"],
+        )
+        additional_extensions = st.text_input("Additional file extensions to analyze (comma-separated):")
+        if additional_extensions:
+            extensions.extend([ext.strip() for ext in additional_extensions.split(",")])
+
         button = st.form_submit_button("Analyze Repository")
 
     if button:
         with st.spinner("Analyzing repository..."):
             if repo_url:
-                recommendations = get_recommendations(repo_url, max_tokens)
+                recommendations = get_recommendations(repo_url, max_tokens, extensions)
 
                 # Display the recommendations
                 first = True
