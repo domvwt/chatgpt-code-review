@@ -111,6 +111,7 @@ with c2:
                     st.markdown(recommendation)
                     # Expander to show the code
                     with st.expander("View Code"):
-                        display_code(rec["code_snippet"], "python")
+                        extension = os.path.splitext(rec["code_file"])[1]
+                        display_code(rec["code_snippet"], extension)
             else:
                 st.error("Please enter a valid GitHub repository URL.")

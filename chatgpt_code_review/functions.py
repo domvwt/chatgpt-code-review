@@ -43,8 +43,6 @@ def analyze_code_file(code_file, max_tokens):
     }
 
 
-# Change spinner text to "Analyzing repository..."
-# @st.cache_data(show_spinner=False)
 def get_recommendations(repo_url, max_tokens, extensions):
     # Analyze the repository
     if repo_url:
@@ -85,6 +83,7 @@ def get_analysis(code, max_tokens=200):
     )
 
     logging.info("Sending request to OpenAI API for code analysis")
+    logging.info("Max tokens: %d", max_tokens)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -103,7 +102,28 @@ def get_analysis(code, max_tokens=200):
     return assistant_response.strip()
 
 
-def display_code(code, language):
+def extension_to_language(file_extension):
+    language_map = {
+        ".py": "python",
+        ".js": "javascript",
+        ".java": "java",
+        ".cpp": "cpp",
+        ".c": "c",
+        ".rb": "ruby",
+        ".php": "php",
+        ".cs": "csharp",
+        ".go": "go",
+        ".swift": "swift",
+        ".ts": "typescript",
+        ".rs": "rust",
+        ".kt": "kotlin",
+        ".m": "objective-c",
+    }
+    return language_map.get(file_extension.lower(), None)
+
+
+def display_code(code, extension):
+    language = extension_to_language(extension)
     markdown_code = f"```{language}\n{code}\n```"
     st.markdown(markdown_code, unsafe_allow_html=True)
 
