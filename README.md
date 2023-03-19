@@ -31,8 +31,6 @@ app.
 
 ## Example
 
-<br>
-
 <p width=100%>
 <img width=100%  src="https://github.com/domvwt/chatgpt-code-review/blob/main/media/example.png?raw=true" alt="example page" style="border-radius:0.5%;">
 </p>
