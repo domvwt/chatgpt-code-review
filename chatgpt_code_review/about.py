@@ -37,10 +37,8 @@ a {
 
 ### Links
 
-[OpenAI](https://openai.com/)
-
-[API Keys](https://platform.openai.com/account/api-keys)
-
-[GitHub](https://github.com/domvwt/chatgpt-code-review)
+- [OpenAI](https://openai.com/)
+- [API Keys](https://platform.openai.com/account/api-keys)
+- [GitHub](https://github.com/domvwt/chatgpt-code-review)
 
 """
