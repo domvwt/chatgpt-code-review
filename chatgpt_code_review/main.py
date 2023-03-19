@@ -3,29 +3,35 @@ import os
 
 import openai
 import streamlit as st
+from streamlit_tree_select import tree_select
 from about import about_section
-from functions import display_code, escape_markdown, get_recommendations
+import repo, query, display
+
+
+def load_environment_variables(file_path: str) -> None:
+    if os.path.exists(file_path):
+        with open(file_path) as f:
+            for line in f:
+                if line.strip():
+                    key, value = line.strip().split("=")
+                    os.environ[key] = value
+
+
+def configure_logging(log_file: str, level: int = logging.INFO) -> None:
+    logging.basicConfig(filename=log_file, level=level)
 
 
 env_file_path = ".env"
-
-# Load all environment variables from the .env file
-if os.path.exists(env_file_path):
-    with open(env_file_path) as f:
-        for line in f:
-            if line.strip():
-                key, value = line.strip().split("=")
-                os.environ[key] = value
-
-# Configure logging
 log_file = "app.log"
-logging.basicConfig(filename=log_file, level=logging.INFO)
+
+load_environment_variables(env_file_path)
+configure_logging(log_file)
 
 st.set_page_config(
     page_title="ChatGPT Code Review",
 )
 
-analyze_repo_button = False
+session_state = st.session_state
 
 st.title("ChatGPT Code Review :rocket:")
 
@@ -34,6 +40,7 @@ with st.expander("About ChatGPT Code Review"):
     st.write("")
 
 with st.form("repo_url_form"):
+    clone_repo_button = False
     # Get the GitHub repository URL
     default_repo_url = "https://github.com/domvwt/chatgpt-code-review"
     repo_url = st.text_input("GitHub Repository URL:", default_repo_url)
@@ -58,31 +65,47 @@ with st.form("repo_url_form"):
     if additional_extensions:
         extensions.extend([ext.strip() for ext in additional_extensions.split(",")])
 
-    analyze_repo_button = st.form_submit_button("Analyze Repository")
+    clone_repo_button = st.form_submit_button("Clone Repository")
 
-if analyze_repo_button:
-    if not openai.api_key:
-        st.error("Please enter your OpenAI API key.")
-        st.stop()
-    with st.spinner("Analyzing repository..."):
-        if repo_url:
-            recommendations = get_recommendations(repo_url, max_tokens, extensions)
+
+# Clone the repository and display the list of files
+with st.form("analyze_files_form"):
+    analyze_files_button = False
+    if clone_repo_button or session_state.get("code_files"):
+        if not session_state.get("code_files"):
+            session_state.code_files = repo.list_code_files_in_repository(repo_url, extensions)
+
+        st.write("Select files to analyze:")
+        file_tree = repo.create_file_tree(session_state.code_files)
+        session_state.selected_files = tree_select(file_tree, show_expand_all=True, check_model="leaf", expanded=file_tree)["checked"]
+        logging.info(session_state.selected_files)
+        analyze_files_button = st.form_submit_button("Analyze Files")
+
+
+# Analyze the selected files
+with st.spinner("Analyzing files..."):
+    if analyze_files_button:
+        if not openai.api_key:
+            st.error("Please enter your OpenAI API key.")
+            st.stop()
+
+        if session_state.get("selected_files"):
+            recommendations = query.analyze_code_files(session_state.selected_files, int(max_tokens))
 
             # Display the recommendations
+            st.header("Recommendations")
             first = True
-            for rec in filter(None, recommendations):
+            for rec in recommendations:
                 if not first:
                     st.write("---")
                 else:
-                    st.header("Recommendations")
                     first = False
-                subheader = escape_markdown(rec["code_file"]).replace("/tmp/", "")
-                st.subheader(subheader)
-                recommendation = rec["recommendation"] or "No recommendations"
+                st.subheader(display.escape_markdown(rec['code_file']))
+                recommendation = rec['recommendation'] or "No recommendations"
                 st.markdown(recommendation)
-                # Expander to show the code
                 with st.expander("View Code"):
-                    extension = os.path.splitext(rec["code_file"])[1]
-                    display_code(rec["code_snippet"], extension)
+                    extension = rec['code_file'].split('.')[-1]
+                    display.display_code(rec["code_snippet"], extension)
         else:
-            st.error("Please enter a valid GitHub repository URL.")
+            st.error("Please select at least one file to analyze.")
+    
