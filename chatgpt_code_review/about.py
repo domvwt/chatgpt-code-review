@@ -27,4 +27,20 @@ Keep in mind that ChatGPT Code Review is an AI-powered tool, and while it can
 provide helpful insights, it may not always be perfect. It is essential to use
 your judgment and expertise when assessing the recommendations provided by the
 app.
+
+<!--don't underline links -->
+<style>
+a {
+   text-decoration: none;
+}
+</style>
+
+### Links
+
+[OpenAI](https://openai.com/)
+
+[API Keys](https://platform.openai.com/account/api-keys)
+
+[GitHub](https://github.com/domvwt/chatgpt-code-review)
+
 """

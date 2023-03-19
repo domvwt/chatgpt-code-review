@@ -29,28 +29,7 @@ st.set_page_config(
 )
 
 
-button = False
-
-# Sidebar with links to OpenAPI and the GitHub repository
-with st.sidebar:
-    st.markdown(
-        """
-        <!--don't underline links -->
-        <style>
-        a {
-            text-decoration: none;
-        }
-        </style>
-        ## Links
-
-        :robot_face:  [OpenAI](https://openai.com/)
-
-        :key:  [API Keys](https://platform.openai.com/account/api-keys)
-
-        :toolbox:  [GitHub](https://github.com/domvwt/chatgpt-code-review)
-        """,
-        unsafe_allow_html=True,
-    )
+analyze_repo_button = False
 
 c1, c2, c3 = st.columns([1, 8, 1])
 
@@ -59,7 +38,7 @@ with c2:
 
     # About section expanded by default
     with st.expander("About ChatGPT Code Review"):
-        st.markdown(about_section)
+        st.markdown(about_section, unsafe_allow_html=True)
         st.write("")
 
     with st.form("repo_url_form"):
@@ -73,7 +52,7 @@ with c2:
 
         # Set the maximum as integer input
         max_tokens = st.number_input(
-            "Maximum tokens per OpenAI API query and response", min_value=1, max_value=4096, value=2000
+            "Maximum tokens per OpenAI API query", min_value=1, max_value=4096, value=2000
         )
 
         # Select file extensions to analyze
@@ -87,9 +66,9 @@ with c2:
         if additional_extensions:
             extensions.extend([ext.strip() for ext in additional_extensions.split(",")])
 
-        button = st.form_submit_button("Analyze Repository")
+        analyze_repo_button = st.form_submit_button("Analyze Repository")
 
-    if button:
+    if analyze_repo_button:
         if not openai.api_key:
             st.error("Please enter your OpenAI API key.")
             st.stop()
