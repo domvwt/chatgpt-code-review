@@ -23,9 +23,7 @@ logging.basicConfig(filename=log_file, level=logging.INFO)
 
 st.set_page_config(
     page_title="ChatGPT Code Review",
-    page_icon=":robot_face:",
     layout="wide",
-    initial_sidebar_state="expanded",
 )
 
 
