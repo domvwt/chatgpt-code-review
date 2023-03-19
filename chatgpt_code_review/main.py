@@ -118,7 +118,8 @@ with st.form("analyze_files_form"):
 
 # Analyze the selected files
 with st.spinner("Analyzing files..."):
-    if analyze_files_button:
+    if analyze_files_button or session_state.get("analyzed_files"):
+        session_state.analyzed_files = True
         if not openai.api_key:
             st.error("Please enter your OpenAI API key.")
             st.stop()
@@ -131,6 +132,7 @@ with st.spinner("Analyzing files..."):
             # Display the recommendations
             st.header("Recommendations")
             first = True
+            recommendation_list = []
             for rec in recommendations:
                 if not first:
                     st.write("---")
@@ -142,8 +144,34 @@ with st.spinner("Analyzing files..."):
                 with st.expander("View Code"):
                     extension = os.path.splitext(rec["code_file"])[1]
                     display.display_code(rec["code_snippet"], extension)
+                recommendation_list.append(rec)
+            if recommendation_list:
+                session_state.recommendation_list = recommendation_list
         else:
             st.error("Please select at least one file to analyze.")
             st.stop()
+
+st.write("")
+
+
+def download_markdown(recommendations):
+    if recommendations:
+        st.download_button(
+            "Download Markdown",
+            data=display.generate_markdown(recommendations),
+            file_name="chatgpt_recommendations.md",
+            mime="text/markdown",
+        )
+    else:
+        st.download_button(
+            "Download Markdown",
+            data="",
+            file_name="chatgpt_recommendations.md",
+            mime="text/markdown",
+            disabled=True,
+        )
+
+
+download_markdown(session_state.get("recommendation_list"))
 
 os.chdir(cwd)

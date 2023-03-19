@@ -53,3 +53,16 @@ def escape_markdown(text: str) -> str:
     ]
     regex = re.compile("|".join(map(re.escape, escape_chars)))
     return regex.sub(r"\\\g<0>", text)
+
+
+def generate_markdown(recommendations):
+    markdown_str = "# ChatGPT Code Review Recommendations\n\n"
+
+    for rec in recommendations:
+        code_file = rec["code_file"]
+        recommendation = rec["recommendation"] or "No recommendations"
+
+        markdown_str += f"## {code_file}\n\n"
+        markdown_str += f"{recommendation}\n\n"
+
+    return markdown_str
