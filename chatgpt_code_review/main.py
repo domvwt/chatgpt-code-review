@@ -1,11 +1,13 @@
 import logging
 import os
 
+import display
 import openai
+import query
+import repo
 import streamlit as st
-from streamlit_tree_select import tree_select
 from about import about_section
-import repo, query, display
+from streamlit_tree_select import tree_select
 
 
 def load_environment_variables(file_path: str) -> None:
@@ -26,6 +28,11 @@ log_file = "app.log"
 
 load_environment_variables(env_file_path)
 configure_logging(log_file)
+
+cwd = os.getcwd()
+temp_dir = "/tmp/chatgpt-code-review"
+os.makedirs(temp_dir, exist_ok=True)
+os.chdir(temp_dir)
 
 st.set_page_config(
     page_title="ChatGPT Code Review",
@@ -53,7 +60,10 @@ with st.form("repo_url_form"):
 
     # Set the maximum as integer input
     max_tokens = st.number_input(
-        "Maximum tokens per OpenAI API query", min_value=1, max_value=4096, value=2000
+        "Maximum tokens per OpenAI API query",
+        min_value=1,
+        max_value=4096,
+        value=2000,
     )
 
     # Select file extensions to analyze
@@ -78,7 +88,9 @@ with st.form("repo_url_form"):
         "Additional file extensions to analyze (comma-separated):"
     )
     if additional_extensions:
-        extensions.extend([ext.strip() for ext in additional_extensions.split(",")])
+        extensions.extend(
+            [ext.strip() for ext in additional_extensions.split(",")]
+        )
 
     clone_repo_button = st.form_submit_button("Clone Repository")
 
@@ -95,9 +107,12 @@ with st.form("analyze_files_form"):
         st.write("Select files to analyze:")
         file_tree = repo.create_file_tree(session_state.code_files)
         session_state.selected_files = tree_select(
-            file_tree, show_expand_all=True, check_model="leaf", expanded=file_tree
+            file_tree,
+            show_expand_all=True,
+            check_model="leaf",
+            checked=session_state.get("selected_files"),
         )["checked"]
-        logging.info(session_state.selected_files)
+        logging.info("Selected files: %s", session_state.selected_files)
         analyze_files_button = st.form_submit_button("Analyze Files")
 
 
@@ -130,3 +145,5 @@ with st.spinner("Analyzing files..."):
         else:
             st.error("Please select at least one file to analyze.")
             st.stop()
+
+os.chdir(cwd)

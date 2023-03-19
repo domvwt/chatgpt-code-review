@@ -10,12 +10,11 @@ def analyze_code_files(
     code_files: list[str], max_tokens: int
 ) -> Iterable[dict[str, str]]:
     """Analyze the selected code files and return recommendations."""
-    for code_file in code_files:
-        rec = analyze_code_file(code_file, max_tokens)
-        yield rec
+    return (
+        analyze_code_file(code_file, max_tokens) for code_file in code_files
+    )
 
 
-@st.cache_data(show_spinner=False)
 def analyze_code_file(code_file: str, max_tokens: int) -> dict[str, str]:
     """Analyze a code file and return a dictionary with file information and recommendations."""
     with open(code_file, "r") as f:

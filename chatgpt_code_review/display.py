@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 
 import streamlit as st
@@ -24,7 +25,7 @@ def extension_to_language(file_extension: str) -> Optional[str]:
     return language_map.get(file_extension.lower(), None)
 
 
-def display_code(code: str, extension: str):
+def display_code(code: str, extension: str) -> None:
     """Display the code snippet in the specified language."""
     language = extension_to_language(extension)
     markdown_code = f"```{language}\n{code}\n```"
@@ -50,6 +51,5 @@ def escape_markdown(text: str) -> str:
         ".",
         "!",
     ]
-    for char in escape_chars:
-        text = text.replace(char, f"\\{char}")
-    return text
+    regex = re.compile("|".join(map(re.escape, escape_chars)))
+    return regex.sub(r"\\\g<0>", text)
