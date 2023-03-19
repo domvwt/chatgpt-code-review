@@ -6,7 +6,9 @@ import openai
 import streamlit as st
 
 
-def analyze_code_files(code_files: list[str], max_tokens: int) -> Iterable[dict[str, str]]:
+def analyze_code_files(
+    code_files: list[str], max_tokens: int
+) -> Iterable[dict[str, str]]:
     """Analyze the selected code files and return recommendations."""
     for code_file in code_files:
         rec = analyze_code_file(code_file, max_tokens)
@@ -40,8 +42,9 @@ def analyze_code_file(code_file: str, max_tokens: int) -> dict[str, str]:
 
 @st.cache_data(show_spinner=False)
 def get_code_analysis(code: str, max_tokens: int) -> str:
-    """Get code analysis from the OpenAI API."""    
-    prompt = dedent(f"""\
+    """Get code analysis from the OpenAI API."""
+    prompt = dedent(
+        f"""\
         Analyze the code below and provide feedback on syntax and logical errors, code
         refactoring and quality, performance optimization, security vulnerabilities,
         and best practices. Please provide specific examples of improvements for each
@@ -75,6 +78,6 @@ def get_code_analysis(code: str, max_tokens: int) -> str:
     logging.info("Received response from OpenAI API")
 
     # Get the assistant's response from the API response
-    assistant_response = response.choices[0].message['content']
+    assistant_response = response.choices[0].message["content"]
 
     return assistant_response.strip()

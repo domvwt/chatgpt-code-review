@@ -47,7 +47,9 @@ with st.form("repo_url_form"):
 
     # Get the OpenAI API key
     api_key = os.getenv("OPENAI_API_KEY", "")
-    openai.api_key = st.text_input("OpenAI API Key:", api_key, placeholder="Paste your API key here")
+    openai.api_key = st.text_input(
+        "OpenAI API Key:", api_key, placeholder="Paste your API key here"
+    )
 
     # Set the maximum as integer input
     max_tokens = st.number_input(
@@ -55,13 +57,26 @@ with st.form("repo_url_form"):
     )
 
     # Select file extensions to analyze
-    options = [".py", ".js", ".java", ".scala", ".cpp", ".c", ".cs", ".go", ".php", ".rb"]
+    options = [
+        ".py",
+        ".js",
+        ".java",
+        ".scala",
+        ".cpp",
+        ".c",
+        ".cs",
+        ".go",
+        ".php",
+        ".rb",
+    ]
     extensions = st.multiselect(
         "File extensions to analyze",
         options=options,
         default=options,
     )
-    additional_extensions = st.text_input("Additional file extensions to analyze (comma-separated):")
+    additional_extensions = st.text_input(
+        "Additional file extensions to analyze (comma-separated):"
+    )
     if additional_extensions:
         extensions.extend([ext.strip() for ext in additional_extensions.split(",")])
 
@@ -73,11 +88,15 @@ with st.form("analyze_files_form"):
     analyze_files_button = False
     if clone_repo_button or session_state.get("code_files"):
         if not session_state.get("code_files"):
-            session_state.code_files = repo.list_code_files_in_repository(repo_url, extensions)
+            session_state.code_files = repo.list_code_files_in_repository(
+                repo_url, extensions
+            )
 
         st.write("Select files to analyze:")
         file_tree = repo.create_file_tree(session_state.code_files)
-        session_state.selected_files = tree_select(file_tree, show_expand_all=True, check_model="leaf", expanded=file_tree)["checked"]
+        session_state.selected_files = tree_select(
+            file_tree, show_expand_all=True, check_model="leaf", expanded=file_tree
+        )["checked"]
         logging.info(session_state.selected_files)
         analyze_files_button = st.form_submit_button("Analyze Files")
 
@@ -90,7 +109,9 @@ with st.spinner("Analyzing files..."):
             st.stop()
 
         if session_state.get("selected_files"):
-            recommendations = query.analyze_code_files(session_state.selected_files, int(max_tokens))
+            recommendations = query.analyze_code_files(
+                session_state.selected_files, int(max_tokens)
+            )
 
             # Display the recommendations
             st.header("Recommendations")
@@ -100,12 +121,12 @@ with st.spinner("Analyzing files..."):
                     st.write("---")
                 else:
                     first = False
-                st.subheader(display.escape_markdown(rec['code_file']))
-                recommendation = rec['recommendation'] or "No recommendations"
+                st.subheader(display.escape_markdown(rec["code_file"]))
+                recommendation = rec["recommendation"] or "No recommendations"
                 st.markdown(recommendation)
                 with st.expander("View Code"):
-                    extension = rec['code_file'].split('.')[-1]
+                    extension = os.path.splitext(rec["code_file"])[1]
                     display.display_code(rec["code_snippet"], extension)
         else:
             st.error("Please select at least one file to analyze.")
-    
+            st.stop()

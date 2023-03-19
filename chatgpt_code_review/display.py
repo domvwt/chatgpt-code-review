@@ -28,7 +28,7 @@ def display_code(code: str, extension: str):
     """Display the code snippet in the specified language."""
     language = extension_to_language(extension)
     markdown_code = f"```{language}\n{code}\n```"
-    st.markdown(markdown_code, unsafe_allow_html=True)
+    st.markdown(markdown_code)
 
 
 def escape_markdown(text: str) -> str:
