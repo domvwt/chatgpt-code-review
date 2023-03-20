@@ -1,7 +1,6 @@
 import logging
 import os
 
-
 EXTENSION_TO_LANGUAGE_MAP = {
     ".py": "python",
     ".js": "javascript",

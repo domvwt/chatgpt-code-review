@@ -2,7 +2,6 @@ import re
 from typing import Optional
 
 import streamlit as st
-
 from utils import EXTENSION_TO_LANGUAGE_MAP
 
 

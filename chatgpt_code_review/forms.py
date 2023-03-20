@@ -5,7 +5,6 @@ import openai
 import repo
 import streamlit as st
 from streamlit_tree_select import tree_select
-
 from utils import EXTENSION_TO_LANGUAGE_MAP
 
 
@@ -20,7 +19,6 @@ class RepoForm:
         self.api_key = ""
         self.extensions = []
         self.additional_extensions = ""
-        self.clone_repo_button = False
 
     def display_form(self):
         """Displays the repository form and its elements."""
@@ -28,12 +26,13 @@ class RepoForm:
             "GitHub Repository URL:", self.default_repo_url
         )
 
-        self.api_key = os.getenv("OPENAI_API_KEY", "")
-        openai.api_key = st.text_input(
+        env_api_key = os.getenv("OPENAI_API_KEY", "")
+        self.api_key = st.text_input(
             "OpenAI API Key:",
-            self.api_key,
+            env_api_key,
             placeholder="Paste your API key here",
         )
+        openai.api_key = self.api_key
 
         self.extensions = st.multiselect(
             "File extensions to analyze",
@@ -54,9 +53,7 @@ class RepoForm:
         """Returns the data captured by the repository form."""
         return (
             self.repo_url,
-            self.api_key,
             self.extensions,
-            self.clone_repo_button,
         )
 
     def is_api_key_valid(self):
