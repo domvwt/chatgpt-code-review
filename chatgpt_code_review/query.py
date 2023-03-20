@@ -74,7 +74,7 @@ def get_code_analysis(code: str, max_tokens: int) -> str:
         ],
         max_tokens=max_tokens,
         n=1,
-        temperature=0,
+        temperature=0.5,
     )
     logging.info("Received response from OpenAI API")
 
