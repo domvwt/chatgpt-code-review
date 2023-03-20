@@ -71,7 +71,6 @@ def get_code_analysis(code: str, max_tokens: int) -> str:
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": prompt},
-            # {"role": "user", "content": code},
         ],
         max_tokens=max_tokens,
         n=1,
