@@ -47,9 +47,12 @@ def get_code_analysis(code: str, max_tokens: int) -> str:
         Analyze the code below and provide feedback on syntax and logical errors, code
         refactoring and quality, performance optimization, security vulnerabilities,
         and best practices. Please provide specific examples of improvements for each
-        area. Be concise and focus on the most important issues.
+        area. Be concise and focus on the most important issues. Make sure to only provide
+        accurate and relevant information.
 
-        Use the following response format, replacing 'RESPONSE' with feedback:
+        Use the following response format, strictly retaining the exact section headings
+        and replacing 'RESPONSE' with feedback. Use bullet points for each response.
+
         **Syntax and logical errors**: RESPONSE
         **Code refactoring and quality**: RESPONSE
         **Performance optimization**: RESPONSE
@@ -59,7 +62,7 @@ def get_code_analysis(code: str, max_tokens: int) -> str:
         Code:
         ```{code}```
 
-        Your review:"""
+        Your review must adhere to the format above. Now, provide your review:"""
     )
 
     logging.info("Sending request to OpenAI API for code analysis")
@@ -68,11 +71,11 @@ def get_code_analysis(code: str, max_tokens: int) -> str:
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": prompt},
-            {"role": "user", "content": code},
+            # {"role": "user", "content": code},
         ],
         max_tokens=max_tokens,
         n=1,
-        temperature=0.5,
+        temperature=0,
     )
     logging.info("Received response from OpenAI API")
 
