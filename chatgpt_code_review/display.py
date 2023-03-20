@@ -3,26 +3,12 @@ from typing import Optional
 
 import streamlit as st
 
+from utils import EXTENSION_TO_LANGUAGE_MAP
+
 
 def extension_to_language(file_extension: str) -> Optional[str]:
     """Return the programming language corresponding to a given file extension."""
-    language_map = {
-        ".py": "python",
-        ".js": "javascript",
-        ".java": "java",
-        ".cpp": "cpp",
-        ".c": "c",
-        ".rb": "ruby",
-        ".php": "php",
-        ".cs": "csharp",
-        ".go": "go",
-        ".swift": "swift",
-        ".ts": "typescript",
-        ".rs": "rust",
-        ".kt": "kotlin",
-        ".m": "objective-c",
-    }
-    return language_map.get(file_extension.lower(), None)
+    return EXTENSION_TO_LANGUAGE_MAP.get(file_extension.lower(), None)
 
 
 def display_code(code: str, extension: str) -> None:
