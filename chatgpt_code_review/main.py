@@ -97,7 +97,6 @@ with st.form("repo_url_form"):
 
 # Clone the repository and display the list of files
 with st.form("analyze_files_form"):
-    analyze_files_button = False
     if clone_repo_button or session_state.get("code_files"):
         if not session_state.get("code_files"):
             session_state.code_files = repo.list_code_files_in_repository(
@@ -113,13 +112,12 @@ with st.form("analyze_files_form"):
             checked=session_state.get("selected_files"),
         )["checked"]
         logging.info("Selected files: %s", session_state.selected_files)
-        analyze_files_button = st.form_submit_button("Analyze Files")
+        session_state.analyze_files = st.form_submit_button("Analyze Files") or session_state.get("analyze_files")
 
 
 # Analyze the selected files
 with st.spinner("Analyzing files..."):
-    if analyze_files_button or session_state.get("analyzed_files"):
-        session_state.analyzed_files = True
+    if session_state.get("analyze_files"):
         if not openai.api_key:
             st.error("Please enter your OpenAI API key.")
             st.stop()
