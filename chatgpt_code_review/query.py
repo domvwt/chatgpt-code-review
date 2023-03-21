@@ -49,28 +49,41 @@ def get_code_analysis(code: str) -> str:
     """Get code analysis from the OpenAI API."""
     prompt = dedent(
         f"""\
-        Analyze the code below and provide feedback on syntax and logical errors, code
-        refactoring and quality, performance optimization, security vulnerabilities,
-        and best practices. Please provide specific examples of improvements for each
-        area. Be concise and focus on the most important issues. Make sure to only provide
-        accurate and relevant information. Do not offer feedback on functions that are
-        not defined in the code. Assume that all required libraries are available.
+Please review the code below and identify any syntax or logical errors, suggest
+ways to refactor and improve code quality, enhance performance, address security
+concerns, and align with best practices. Provide specific examples for each area
+and limit your recommendations to three per category.
 
-        Use the following response format, strictly retaining the exact section headings
-        and replacing 'RESPONSE' with feedback. Use bullet points for each response.
+Use the following response format, keeping the section headings as-is, and provide
+your feedback. Use bullet points for each response. The provided examples are for
+illustration purposes only and should not be repeated.
 
-        **Syntax and logical errors**: RESPONSE
-        **Code refactoring and quality**: RESPONSE
-        **Performance optimization**: RESPONSE
-        **Security vulnerabilities**: RESPONSE
-        **Best practices**: RESPONSE
+**Syntax and logical errors (example)**: 
+- Incorrect indentation on line 12
+- Missing closing parenthesis on line 23
 
-        Code:
-        ```
-        {code}
-        ```
+**Code refactoring and quality (example)**: 
+- Replace multiple if-else statements with a switch case for readability
+- Extract repetitive code into separate functions
 
-        Your review must adhere to the format above. Now, provide your review:"""
+**Performance optimization (example)**: 
+- Use a more efficient sorting algorithm to reduce time complexity
+- Cache results of expensive operations for reuse
+
+**Security vulnerabilities (example)**: 
+- Sanitize user input to prevent SQL injection attacks
+- Use prepared statements for database queries
+
+**Best practices (example)**: 
+- Add meaningful comments and documentation to explain the code
+- Follow consistent naming conventions for variables and functions
+
+Code:
+```
+{code}
+```
+
+Your review:"""
     )
     tokenizer = get_tokenizer()
     tokens_in_prompt = len(tokenizer.encode(prompt))
