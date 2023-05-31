@@ -4,7 +4,7 @@ from typing import Iterable
 
 import openai
 import streamlit as st
-import transformers as tf
+import tiktoken
 
 
 def analyze_code_files(code_files: list[str]) -> Iterable[dict[str, str]]:
@@ -38,10 +38,47 @@ def analyze_code_file(code_file: str) -> dict[str, str]:
     }
 
 
-@st.cache_resource(show_spinner=False)
-def get_tokenizer() -> tf.GPT2Tokenizer:
-    """Get the GPT-2 tokenizer."""
-    return tf.GPT2TokenizerFast.from_pretrained("gpt2")
+def get_num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
+    """Returns the number of tokens used by a list of messages."""
+    # Source: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
+    try:
+        encoding = tiktoken.encoding_for_model(model)
+    except KeyError:
+        logging.debug("Model not found. Using cl100k_base encoding.")
+        encoding = tiktoken.get_encoding("cl100k_base")
+    if model == "gpt-3.5-turbo":
+        logging.debug(
+            "gpt-3.5-turbo may change over time. Returning num tokens assuming gpt-3.5-turbo-0301."
+        )
+        return get_num_tokens_from_messages(
+            messages, model="gpt-3.5-turbo-0301"
+        )
+    elif model == "gpt-4":
+        logging.debug(
+            "gpt-4 may change over time. Returning num tokens assuming gpt-4-0314."
+        )
+        return get_num_tokens_from_messages(messages, model="gpt-4-0314")
+    elif model == "gpt-3.5-turbo-0301":
+        tokens_per_message = (
+            4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
+        )
+        tokens_per_name = -1  # if there's a name, the role is omitted
+    elif model == "gpt-4-0314":
+        tokens_per_message = 3
+        tokens_per_name = 1
+    else:
+        raise NotImplementedError(
+            f"""num_tokens_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens."""
+        )
+    num_tokens = 0
+    for message in messages:
+        num_tokens += tokens_per_message
+        for key, value in message.items():
+            num_tokens += len(encoding.encode(value))
+            if key == "name":
+                num_tokens += tokens_per_name
+    num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
+    return num_tokens
 
 
 @st.cache_data(show_spinner=False)
@@ -58,23 +95,23 @@ Use the following response format, keeping the section headings as-is, and provi
 your feedback. Use bullet points for each response. The provided examples are for
 illustration purposes only and should not be repeated.
 
-**Syntax and logical errors (example)**: 
+**Syntax and logical errors (example)**:
 - Incorrect indentation on line 12
 - Missing closing parenthesis on line 23
 
-**Code refactoring and quality (example)**: 
+**Code refactoring and quality (example)**:
 - Replace multiple if-else statements with a switch case for readability
 - Extract repetitive code into separate functions
 
-**Performance optimization (example)**: 
+**Performance optimization (example)**:
 - Use a more efficient sorting algorithm to reduce time complexity
 - Cache results of expensive operations for reuse
 
-**Security vulnerabilities (example)**: 
+**Security vulnerabilities (example)**:
 - Sanitize user input to prevent SQL injection attacks
 - Use prepared statements for database queries
 
-**Best practices (example)**: 
+**Best practices (example)**:
 - Add meaningful comments and documentation to explain the code
 - Follow consistent naming conventions for variables and functions
 
@@ -85,10 +122,12 @@ Code:
 
 Your review:"""
     )
-    tokenizer = get_tokenizer()
-    tokens_in_prompt = len(tokenizer.encode(prompt))
+    messages = [{"role": "system", "content": prompt}]
+    tokens_in_messages = get_num_tokens_from_messages(
+        messages=messages, model="gpt-3.5-turbo"
+    )
     max_tokens = 4096
-    tokens_for_response = max_tokens - tokens_in_prompt
+    tokens_for_response = max_tokens - tokens_in_messages
 
     if tokens_for_response < 200:
         return "The code file is too long to analyze. Please select a shorter file."
@@ -97,9 +136,7 @@ Your review:"""
     logging.info("Max response tokens: %d", tokens_for_response)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": prompt},
-        ],
+        messages=messages,
         max_tokens=tokens_for_response,
         n=1,
         temperature=0,
