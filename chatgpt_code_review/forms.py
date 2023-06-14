@@ -13,8 +13,7 @@ class RepoForm:
 
     options = EXTENSION_TO_LANGUAGE_MAP.keys()
 
-    def __init__(self, default_repo_url: str):
-        self.default_repo_url = default_repo_url
+    def __init__(self):
         self.repo_url = ""
         self.api_key = ""
         self.extensions = []
@@ -23,13 +22,12 @@ class RepoForm:
     def display_form(self):
         """Displays the repository form and its elements."""
         self.repo_url = st.text_input(
-            "GitHub Repository URL:", self.default_repo_url
+            "GitHub Repository URL:", placeholder="Paste your GitHub repo here",
+
         )
 
-        env_api_key = os.getenv("OPENAI_API_KEY", "")
         self.api_key = st.text_input(
             "OpenAI API Key:",
-            env_api_key,
             placeholder="Paste your API key here",
         )
         openai.api_key = self.api_key
@@ -60,6 +58,13 @@ class RepoForm:
         """Checks if the OpenAI API key is valid and returns a boolean value."""
         if not self.api_key:
             st.error("Please enter your OpenAI API key.")
+            return False
+        return True
+
+    def is_github_repo_valid(self):
+        """Checks if the repo url is valid and returns a boolean value."""
+        if not self.repo_url:
+            st.error("Please enter your GitHub repo url.")
             return False
         return True
 

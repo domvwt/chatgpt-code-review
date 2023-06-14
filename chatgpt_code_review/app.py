@@ -34,13 +34,12 @@ def app():
             st.markdown(about.about_section, unsafe_allow_html=True)
             st.write("")
 
-        default_repo_url = "https://github.com/domvwt/chatgpt-code-review"
-        repo_form = forms.RepoForm(default_repo_url)
+        repo_form = forms.RepoForm()
         with st.form("repo_url_form"):
             repo_form.display_form()
 
         # Check if the API key is valid before proceeding
-        if repo_form.clone_repo_button and not repo_form.is_api_key_valid():
+        if repo_form.clone_repo_button and not (repo_form.is_github_repo_valid() and repo_form.is_api_key_valid()):
             st.stop()
 
         repo_url, extensions = repo_form.get_form_data()
