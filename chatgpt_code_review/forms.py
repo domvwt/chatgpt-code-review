@@ -13,10 +13,11 @@ class RepoForm:
 
     options = EXTENSION_TO_LANGUAGE_MAP.keys()
 
-    def __init__(self, default_repo_url: str):
+    def __init__(self, default_repo_url: str, localserver: str = None):
         self.default_repo_url = default_repo_url
         self.repo_url = ""
         self.api_key = ""
+        self.localserver=localserver
         self.extensions = []
         self.additional_extensions = ""
 
@@ -26,12 +27,22 @@ class RepoForm:
             "GitHub Repository URL:", self.default_repo_url
         )
 
-        env_api_key = os.getenv("OPENAI_API_KEY", "")
-        self.api_key = st.text_input(
-            "OpenAI API Key:",
-            env_api_key,
-            placeholder="Paste your API key here",
-        )
+
+        if self.localserver:
+            env_api_key = ": )"
+            self.api_key = st.text_input(
+                "OpenAI Local Server:",
+                env_api_key,
+                placeholder=self.localserver,
+            )
+        else:
+            env_api_key = os.getenv("OPENAI_API_KEY", "")
+            self.api_key = st.text_input(
+                "OpenAI API Key:",
+                env_api_key,
+                placeholder="Paste your API key here",
+            )
+
         openai.api_key = self.api_key
 
         self.extensions = st.multiselect(

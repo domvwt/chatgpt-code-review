@@ -71,6 +71,14 @@ Here's how to install and use ChatGPT Code Review on your local machine:
 
 5. **Launch the app**: To get the app running, use this command:
 
+**OpenAI API**:
    ```bash
    streamlit run chatgpt_code_review/app.py
+   ```
+
+**Local Server**:
+
+Run **[Free Chatbot API](https://github.com/Amm1rr/Free-Chatbot-API/)** and then:
+   ```bash
+   streamlit run chatgpt_code_review/app.py SERVER http://127.0.0.1:8000/v1/chat/completions/CodeReview
    ```

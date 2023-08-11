@@ -1,14 +1,19 @@
+import json
 import logging
 from textwrap import dedent
 from typing import Iterable
 
 import openai
+import requests
 import streamlit as st
 import tiktoken
 
+LOCAL_SERVER=None
 
-def analyze_code_files(code_files: list[str]) -> Iterable[dict[str, str]]:
+def analyze_code_files(code_files: list[str], localserver: str = "") -> Iterable[dict[str, str]]:
     """Analyze the selected code files and return recommendations."""
+    global LOCAL_SERVER
+    LOCAL_SERVER = localserver
     return (analyze_code_file(code_file) for code_file in code_files)
 
 
@@ -134,16 +139,45 @@ Your review:"""
 
     logging.info("Sending request to OpenAI API for code analysis")
     logging.info("Max response tokens: %d", tokens_for_response)
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=messages,
-        max_tokens=tokens_for_response,
-        n=1,
-        temperature=0,
-    )
+
+    if LOCAL_SERVER and LOCAL_SERVER != "":
+
+        params = {
+            "messages": messages,
+            "session_id": "",
+            "stream": False
+        }
+        response = requests.post(
+            LOCAL_SERVER,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer ",
+            },
+            json=params,
+            timeout=360,
+        )
+
+        stream_data_str = response.json()
+        stream_data_str=json.loads(stream_data_str)
+
+        assistant_response = stream_data_str["choices"][0]["message"]["content"]
+        # print(assistant_response)
+        return assistant_response
+    
+    else:
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            max_tokens=tokens_for_response,
+            n=1,
+            temperature=0,
+        )
+    
+
     logging.info("Received response from OpenAI API")
 
     # Get the assistant's response from the API response
-    assistant_response = response.choices[0].message["content"]
+    assistant_response = stream_data_str.choices[0].message["content"]
 
     return assistant_response.strip()
