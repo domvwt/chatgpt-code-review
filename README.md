@@ -5,6 +5,8 @@
 
 **Fork Note**: This fork comes with additional support for a [**Local API Server**](https://github.com/Amm1rr/WebAI-to-API/) for [ChatGPT](https://github.com/Amm1rr/WebAI-to-API/) and [Claude](https://github.com/Amm1rr/WebAI-to-API/) support.
 
+Use at your responsibility.
+
 [ChatGPT Code Review](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/) is an app designed to help software developers improve
 their code quality by leveraging the power of OpenAI's large language models.
 The app analyzes the code in a given GitHub repository and provides
