@@ -84,7 +84,7 @@ Here's how to install and use ChatGPT Code Review on your local machine:
 
 Run **[WebAI to API](https://github.com/Amm1rr/WebAI-to-API/)** and then:
    ```bash
-   streamlit run chatgpt_code_review/app.py SERVER http://127.0.0.1:8000/v1/chat/completions/CodeReview
+   streamlit run chatgpt_code_review/app.py SERVER http://127.0.0.1:8000/v1/chat/completions
    ```
 <hr>
 
