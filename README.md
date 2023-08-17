@@ -2,6 +2,9 @@
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/)
 
+
+**Fork Note**: This fork comes with additional support for a [**Local API Server**](https://github.com/Amm1rr/WebAI-to-API/) for [ChatGPT](https://github.com/Amm1rr/WebAI-to-API/) and [Claude](https://github.com/Amm1rr/WebAI-to-API/) support.
+
 [ChatGPT Code Review](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/) is an app designed to help software developers improve
 their code quality by leveraging the power of OpenAI's large language models.
 The app analyzes the code in a given GitHub repository and provides
@@ -32,6 +35,7 @@ Keep in mind that ChatGPT Code Review is an AI-powered tool, and while it can
 provide helpful insights, it may not always be perfect. It is essential to use
 your judgment and expertise when assessing the recommendations provided by the
 app.
+
 
 ## Example
 
@@ -82,3 +86,7 @@ Run **[Free Chatbot API](https://github.com/Amm1rr/Free-Chatbot-API/)** and then
    ```bash
    streamlit run chatgpt_code_review/app.py SERVER http://127.0.0.1:8000/v1/chat/completions/CodeReview
    ```
+<hr>
+
+[![](https://visitcount.itsvg.in/api?id=amm1rr&label=V&color=0&icon=2&pretty=true)](https://github.com/Amm1rr/)
+
