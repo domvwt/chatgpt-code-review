@@ -1,4 +1,5 @@
 import os
+import sys
 
 import about
 import display
@@ -15,6 +16,19 @@ log_file = "app.log"
 
 temp_dir = "/tmp/chatgpt-code-review"
 
+## Argument for SERVER endpoint if available
+#
+LOCAL_SERVER=False
+LOCAL_SERVER_ENDPOINT = ""
+if len(sys.argv) > 2:
+    arg1 = sys.argv[1]  # The first argument
+    if arg1.upper() == "SERVER":
+        LOCAL_SERVER = True
+        LOCAL_SERVER_ENDPOINT = sys.argv[2]
+        if not LOCAL_SERVER_ENDPOINT:
+            LOCAL_SERVER = False
+    else:
+        LOCAL_SERVER = False
 
 def app():
     utils.load_environment_variables(env_file_path)
@@ -35,13 +49,14 @@ def app():
             st.write("")
 
         default_repo_url = "https://github.com/domvwt/chatgpt-code-review"
-        repo_form = forms.RepoForm(default_repo_url)
+        repo_form = forms.RepoForm(default_repo_url, localserver=LOCAL_SERVER_ENDPOINT)
         with st.form("repo_url_form"):
             repo_form.display_form()
 
         # Check if the API key is valid before proceeding
-        if repo_form.clone_repo_button and not repo_form.is_api_key_valid():
-            st.stop()
+        if not LOCAL_SERVER:
+            if repo_form.clone_repo_button and not repo_form.is_api_key_valid():
+                st.stop()
 
         repo_url, extensions = repo_form.get_form_data()
 
@@ -62,7 +77,8 @@ def app():
             if session_state.get("analyze_files"):
                 if session_state.get("selected_files"):
                     recommendations = query.analyze_code_files(
-                        session_state.selected_files
+                        session_state.selected_files,
+                        localserver=LOCAL_SERVER_ENDPOINT
                     )
 
                     # Display the recommendations

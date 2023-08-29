@@ -1,17 +1,24 @@
-# ChatGPT Code Review
+# Auto Code Review
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/)
 
-[ChatGPT Code Review](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/) is an app designed to help software developers improve
+
+**Fork Note**: This fork comes with additional support for a Local API Server ([**WebAI to API**](https://github.com/Amm1rr/WebAI-to-API/)) for [ChatGPT](https://github.com/Amm1rr/WebAI-to-API/) and [Claude](https://github.com/Amm1rr/WebAI-to-API/) support.
+
+This is a research day project,
+Use at your responsibility.
+
+
+[Auto Code Review](https://domvwt-chatgpt-code-review-chatgpt-code-reviewmain-cfe8uj.streamlit.app/) is an app designed to help software developers improve
 their code quality by leveraging the power of OpenAI's large language models.
 The app analyzes the code in a given GitHub repository and provides
 recommendations to enhance the code. It is a valuable tool for developers,
 allowing them to discover potential issues in their codebase.
 
-To use ChatGPT Code Review and get recommendations for your code, follow these
+To use Auto Code Review and get recommendations for your code, follow these
 steps:
 
-1. **Access the app**: Open the ChatGPT Code Review app in your web browser.
+1. **Access the app**: Open the Auto Code Review app in your web browser.
 2. **Enter the GitHub repository URL**: In the input field labeled "GitHub
    Repository URL", enter the URL of the repository you'd like to analyze.
 3. **Enter your OpenAI API Key**: In the input field labeled "OpenAI API Key",
@@ -28,10 +35,11 @@ steps:
    Review these recommendations to identify potential areas for improvement in
    your code.
 
-Keep in mind that ChatGPT Code Review is an AI-powered tool, and while it can
+Keep in mind that Auto Code Review is an AI-powered tool, and while it can
 provide helpful insights, it may not always be perfect. It is essential to use
 your judgment and expertise when assessing the recommendations provided by the
 app.
+
 
 ## Example
 
@@ -41,7 +49,7 @@ app.
 
 ## Installation and Usage
 
-Here's how to install and use ChatGPT Code Review on your local machine:
+Here's how to install and use Auto Code Review on your local machine:
 
 1. **Clone the repository**: Execute this on your local machine and navigate to the project directory:
 
@@ -71,6 +79,22 @@ Here's how to install and use ChatGPT Code Review on your local machine:
 
 5. **Launch the app**: To get the app running, use this command:
 
+**OpenAI API**:
    ```bash
+   # ChatGPT
    streamlit run chatgpt_code_review/app.py
    ```
+
+**Local Server**:
+
+Run **[WebAI to API](https://github.com/Amm1rr/WebAI-to-API/)** and then:
+   ```bash
+   # ChatGPT
+   streamlit run chatgpt_code_review/app.py SERVER http://127.0.0.1:8000/v1/chat/completions
+   
+   # Claude
+   streamlit run chatgpt_code_review/app.py SERVER http://127.0.0.1:8000/claude/v1/chat/completions
+   ```
+<hr>
+
+[![](https://visitcount.itsvg.in/api?id=amm1rr&label=V&color=0&icon=2&pretty=true)](https://github.com/Amm1rr/)
